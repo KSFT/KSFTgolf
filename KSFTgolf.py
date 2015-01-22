@@ -12,7 +12,7 @@ class obj:
         else:
             self.o=o
     def get(self,astype):
-        if astype in (int,long):
+        if astype in (int,long,float):
             if type(self.o) in (int,long,float):
                 return self.o
             if type(self.o) in (str,unicode):
@@ -40,7 +40,7 @@ class obj:
             if type(self.o) in (int,long,float):
                 return range(int(self.o))
             if type(self.o) in (str,unicode):
-                return list(self)
+                return list(self.o)
             if type(self.o) == list:
                 return self.o
             if type(self.o) == bool:
@@ -109,7 +109,16 @@ def parse_str_from(stack,c,i):
             stack.append(obj(numpy.base_repr(b,a)))
         elif c[ip]=="n":
             a=stack.pop().get(int)
-            stack.append(obj(bin(a)))
+            stack.append(obj(bin(a)[2:]))
+        elif c[ip]=="o":
+            a=stack.pop().get(str)
+            b=[]
+            for i in a:
+                b.append(obj(ord(i)))
+            stack.append(obj(b))
+        elif c[ip]=="c":
+            a=stack.pop().get(int)
+            stack.append(obj(chr(i)))
         elif c[ip]=="q":
             stack.append(obj(input()))
         elif c[ip]=="e":
@@ -171,7 +180,7 @@ def parse_str_from(stack,c,i):
             ip=ip_
         elif c[ip]=="a":
             for j in stack.pop().get(list):
-                stack.append(obj(j))
+                stack.append(j)
                 ip_=parse_str_from(stack,c,ip+1)
             ip=ip_
         ip+=1
