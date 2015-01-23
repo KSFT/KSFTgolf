@@ -55,7 +55,7 @@ class obj:
         return bool(self.o)
 def parse_str_from(stack,c,i):
     ip=i
-    while ip<len(c) and c[ip]!=";":
+    while ip < len(c) and c[ip] != ";":
         if c[ip] in "0123456789ABCDEF":
             stack.append(obj("0123456789ABCDEF".find(c[ip])))
         elif c[ip]==":":
