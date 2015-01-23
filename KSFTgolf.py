@@ -3,6 +3,8 @@ import numpy
 
 code=open(sys.argv[1]).read()
 stack_=[]
+var={}
+dollar_=open_=close_=None
 block_cmds="iwr"
 last_if=False
 class obj:
@@ -61,6 +63,32 @@ def parse_str_from(stack,c,i):
         elif c[ip]=="'":
             stack.append(obj(c[ip+1]))
             ip+=1
+        elif c[ip]==">":
+            a=stack.pop().get(int)
+            b=stack.pop().get(int)
+            stack.append(obj(b>a))
+        elif c[ip]=="<":
+            a=stack.pop().get(int)
+            b=stack.pop().get(int)
+            stack.append(obj(b<a))
+        elif c[ip]=="=":
+            a=stack.pop().get(int)
+            b=stack.pop().get(int)
+            stack.append(obj(b==a))
+        elif c[ip]=="~":
+            var[c[ip+1]]=stack.pop()
+            ip+=1
+        elif c[ip]=="v":
+            stack.append(var[c[ip+1]])
+            ip+=1
+        elif c[ip]=="&":
+            a=stack.pop().get(bool)
+            b=stack.pop().get(bool)
+            stack.append(obj(a and b))
+        elif c[ip]=="|":
+            a=stack.pop().get(bool)
+            b=stack.pop().get(bool)
+            stack.append(obj(a or b))
         elif c[ip]=="+":
             a=stack.pop().get(int)
             b=stack.pop().get(int)
@@ -76,9 +104,21 @@ def parse_str_from(stack,c,i):
         elif c[ip]=="/":
             a=stack.pop().get(int)
             b=stack.pop().get(int)
-            stack.append(obj(b/a))
+            stack.append(obj(float(b)/a))
         elif c[ip]=="x":
             stack.pop()
+        elif c[ip]=="y":
+            dollar_=stack.pop()
+        elif c[ip]=="$":
+            stack.append(dollar_)
+        elif c[ip]=="[":
+            open_=stack.pop()
+        elif c[ip]=="(":
+            stack.append(open_)
+        elif c[ip]=="]":
+            close_=stack.pop()
+        elif c[ip]==")":
+            stack.append(close_)
         elif c[ip]=="_":
             a=stack.pop().get(list)
             b=c[ip+1]
