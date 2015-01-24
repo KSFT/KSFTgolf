@@ -79,6 +79,21 @@ def parse_str_from(stack,c,i):
                 n+="0123456789ABCDEF".find(c[ip])
                 ip+=1
             stack.append(obj(n))
+        elif c[ip]=="|":
+            s=c[ip:c[ip+1:].find("|")]
+            ip+=len(s)+1
+            b=[]
+            for i in s.split(" "):
+                if b=="":
+                    continue
+                b.append(obj(i))
+            stack.append(obj(b))
+        elif c[ip]=="L":
+            n=stack.pop().get(int)
+            l=[]
+            for i in range(n):
+                l.append(stack.pop())
+            stack.append(obj(l))
         elif c[ip]=="#":
             a=stack.pop().get(int)
             b=stack[-1].get(list)
@@ -167,6 +182,8 @@ def parse_str_from(stack,c,i):
             stack.append(obj(a^b))
         elif c[ip]=="x":
             stack.pop()
+        elif c[ip]=="s":
+            stack.append(obj(sorted(stack.pop().get(list))))
         elif c[ip]=="y":
             dollar_=stack.pop()
         elif c[ip]=="$":
