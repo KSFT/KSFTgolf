@@ -63,6 +63,10 @@ def parse_str_from(stack,c,i):
         elif c[ip]=="'":
             stack.append(obj(c[ip+1]))
             ip+=1
+        elif c[ip]=="\"":
+            l=c[ip+1:].index("\"")
+            stack.append(c[ip+1]:ip+1+l)
+            ip+=l+2
         elif c[ip]==">":
             a=stack.pop().get(int)
             b=stack.pop().get(int)
