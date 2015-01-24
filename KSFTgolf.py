@@ -64,9 +64,61 @@ def parse_str_from(stack,c,i):
             stack.append(obj(c[ip+1]))
             ip+=1
         elif c[ip]=="\"":
-            l=c[ip+1:].index("\"")
-            stack.append(c[ip+1]:ip+1+l)
-            ip+=l+2
+            s=""
+            ip+=1
+            while not (c[ip]=="\"" and c[ip-1]!="\\"):
+                s+=c[ip]
+                ip+=1
+            ip+=1
+            stack.append(obj(eval("\""+s+"\"")))
+        elif c[ip]=="`":
+            n=0
+            ip+=1
+            while c[ip] in "0123456789ABCDEF":
+                n*=10
+                n+="0123456789ABCDEF".find(c[ip])
+                ip+=1
+            stack.append(obj(n))
+        elif c[ip]=="#":
+            a=stack.pop().get(int)
+            b=stack[-1].get(list)
+            stack.append(b[a])
+        elif c[ip]=="@":
+            a=c[ip+1]
+            l=stack[-1].get(list)
+            if a=="0"
+                m=l[:]
+            elif a=="1"
+                b=stack.pop.get(int)
+                m=l[b]
+            elif a=="2"
+                b=stack.pop.get(int)
+                m=l[:b]
+            elif a=="3"
+                b=stack.pop.get(int)
+                d=stack.pop.get(int)
+                m=l[b:d]
+            elif a=="4"
+                b=stack.pop.get(int)
+                m=l[::b]
+            elif a=="5"
+                b=stack.pop.get(int)
+                m=l[b:]
+            elif a=="6"
+                b=stack.pop.get(int)
+                d=stack.pop.get(int)
+                m=l[b::d]
+            elif a=="7"
+                b=stack.pop.get(int)
+                d=stack.pop.get(int)
+                m=l[:b:d]
+            elif a=="8"
+                b=stack.pop.get(int)
+                d=stack.pop.get(int)
+                e=stack.pop.get(int)
+                m=l[b:d:e]
+            stack.append(m)
+            ip+=1
         elif c[ip]==">":
             a=stack.pop().get(int)
             b=stack.pop().get(int)
@@ -109,6 +161,10 @@ def parse_str_from(stack,c,i):
             a=stack.pop().get(int)
             b=stack.pop().get(int)
             stack.append(obj(float(b)/a))
+        elif c[ip]=="^":
+            a=stack.pop().get(int)
+            b=stack.pop().get(int)
+            stack.append(obj(a^b))
         elif c[ip]=="x":
             stack.pop()
         elif c[ip]=="y":
