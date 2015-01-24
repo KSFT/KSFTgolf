@@ -84,7 +84,7 @@ def parse_str_from(stack,c,i):
             ip+=len(s)+1
             b=[]
             for i in s.split(" "):
-                if b=="":
+                if i=="":
                     continue
                 b.append(obj(i))
             stack.append(obj(b))
@@ -100,37 +100,44 @@ def parse_str_from(stack,c,i):
             stack.append(b[a])
         elif c[ip]=="@":
             a=c[ip+1]
-            l=stack[-1].get(list)
-            if a=="0"
+            if a=="0":
                 m=l[:]
-            elif a=="1"
+            elif a=="1":
                 b=stack.pop.get(int)
+                l=stack[-1].get(list)
                 m=l[b]
-            elif a=="2"
+            elif a=="2":
                 b=stack.pop.get(int)
+                l=stack[-1].get(list)
                 m=l[:b]
-            elif a=="3"
+            elif a=="3":
                 b=stack.pop.get(int)
                 d=stack.pop.get(int)
+                l=stack[-1].get(list)
                 m=l[b:d]
-            elif a=="4"
+            elif a=="4":
                 b=stack.pop.get(int)
+                l=stack[-1].get(list)
                 m=l[::b]
-            elif a=="5"
+            elif a=="5":
                 b=stack.pop.get(int)
+                l=stack[-1].get(list)
                 m=l[b:]
-            elif a=="6"
+            elif a=="6":
                 b=stack.pop.get(int)
                 d=stack.pop.get(int)
+                l=stack[-1].get(list)
                 m=l[b::d]
-            elif a=="7"
+            elif a=="7":
                 b=stack.pop.get(int)
                 d=stack.pop.get(int)
+                l=stack[-1].get(list)
                 m=l[:b:d]
-            elif a=="8"
+            elif a=="8":
                 b=stack.pop.get(int)
                 d=stack.pop.get(int)
                 e=stack.pop.get(int)
+                l=stack[-1].get(list)
                 m=l[b:d:e]
             stack.append(m)
             ip+=1
