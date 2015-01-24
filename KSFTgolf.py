@@ -163,7 +163,7 @@ def parse_str_from(stack,c,i):
             a=stack.pop().get(bool)
             b=stack.pop().get(bool)
             stack.append(obj(a and b))
-        elif c[ip]=="|":
+        elif c[ip]==",":
             a=stack.pop().get(bool)
             b=stack.pop().get(bool)
             stack.append(obj(a or b))
@@ -183,6 +183,10 @@ def parse_str_from(stack,c,i):
             a=stack.pop().get(int)
             b=stack.pop().get(int)
             stack.append(obj(float(b)/a))
+        elif c[ip]=="d":
+            a=stack.pop().get(int)
+            b=stack.pop().get(int)
+            stack.append(obj(b//a))
         elif c[ip]=="^":
             a=stack.pop().get(int)
             b=stack.pop().get(int)
@@ -221,6 +225,12 @@ def parse_str_from(stack,c,i):
             a=stack.pop().get(str)
             b=stack.pop().get(str)
             stack.append(obj(b+a))
+        elif c[ip]=="j":
+            a=stack.pop.get(list):
+            stack.append(any([i.o for i in a]))
+        elif c[ip]=="k":
+            a=stack.pop.get(list):
+            stack.append(all([i.o for i in a]))
         elif c[ip]=="h":
             stack.append(obj(100))
         elif c[ip]=="M":
