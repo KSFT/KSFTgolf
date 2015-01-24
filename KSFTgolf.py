@@ -32,7 +32,7 @@ class obj:
             if type(self.o) in (str,unicode):
                 return self.o
             if type(self.o) == list:
-                return str(self.o)
+                return str(self.o) if type(self.o) != list else str([i.get(str) for i in self.o.get(list)])
             if type(self.o) == bool:
                 if self.o:
                     return "1"
@@ -44,7 +44,7 @@ class obj:
             if type(self.o) in (str,unicode):
                 return list(self.o)
             if type(self.o) == list:
-                return self.o
+                return [i if type(i.o) != list else i.get(list) for i in self.o]
             if type(self.o) == bool:
                 return [self]
         if astype == bool:
@@ -150,8 +150,8 @@ def parse_str_from(stack,c,i):
             b=stack.pop().get(int)
             stack.append(obj(b<a))
         elif c[ip]=="=":
-            a=stack.pop().get(int)
-            b=stack.pop().get(int)
+            a=stack.pop().get(str)
+            b=stack.pop().get(str)
             stack.append(obj(b==a))
         elif c[ip]=="~":
             var[c[ip+1]]=stack.pop()
