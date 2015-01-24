@@ -167,6 +167,13 @@ def parse_str_from(stack,c,i):
             a=stack.pop().get(bool)
             b=stack.pop().get(bool)
             stack.append(obj(a or b))
+        elif c[ip]=="f":
+            a=stack.pop().get(str)
+            b=stack[-1].get(list)
+            for i in range(len(b)):
+                if b[i].get(str)==a:
+                    stack.append(i)
+                    break
         elif c[ip]=="+":
             a=stack.pop().get(int)
             b=stack.pop().get(int)
