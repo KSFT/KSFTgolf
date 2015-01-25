@@ -5,13 +5,17 @@ code=open(sys.argv[1]).read()
 stack_=[]
 var={}
 dollar_=open_=close_=None
-block_cmds="iwr"
+block_cmds="iwrgla_"
 last_if=False
-class obj:
+class obj(object):
     def __init__(self,o):
         if type(o)==tuple:
             self.o=list(o)
         else:
+            if type(o)==list:
+                o=[obj(i) for i in o]
+            elif type(o)==obj:
+                o=o.o
             self.o=o
     def get(self,astype):
         if astype in (int,long,float):
@@ -32,7 +36,7 @@ class obj:
             if type(self.o) in (str,unicode):
                 return self.o
             if type(self.o) == list:
-                return str(self.o) if type(self.o) != list else str([i.get(str) for i in self.o.get(list)])
+                return str(self.o) if type(self.o) != list else str([i.get(str) for i in self.o])
             if type(self.o) == bool:
                 if self.o:
                     return "1"
@@ -54,8 +58,11 @@ class obj:
     def __nonzero__(self):
         return bool(self.o)
 def parse_str_from(stack,c,i):
+    global dollar_,open_,close_,var,last_if
     ip=i
     while ip < len(c) and c[ip] != ";":
+        #print " ".join([i.get(str) for i in stack])
+        #print c[ip]
         if c[ip] in "0123456789ABCDEF":
             stack.append(obj("0123456789ABCDEF".find(c[ip])))
         elif c[ip]==":":
@@ -78,7 +85,7 @@ def parse_str_from(stack,c,i):
                 n*=10
                 n+="0123456789ABCDEF".find(c[ip])
                 ip+=1
-            stack.append(obj(n))
+            stack.append(obj(int(n,16)))
         elif c[ip]=="|":
             s=c[ip:c[ip+1:].find("|")]
             ip+=len(s)+1
@@ -103,44 +110,54 @@ def parse_str_from(stack,c,i):
             if a=="0":
                 m=l[:]
             elif a=="1":
-                b=stack.pop.get(int)
+                b=stack.pop().get(int)
                 l=stack[-1].get(list)
                 m=l[b]
             elif a=="2":
-                b=stack.pop.get(int)
+                b=stack.pop().get(int)
                 l=stack[-1].get(list)
                 m=l[:b]
             elif a=="3":
-                b=stack.pop.get(int)
-                d=stack.pop.get(int)
+                b=stack.pop().get(int)
+                d=stack.pop().get(int)
                 l=stack[-1].get(list)
                 m=l[b:d]
             elif a=="4":
-                b=stack.pop.get(int)
+                b=stack.pop().get(int)
                 l=stack[-1].get(list)
                 m=l[::b]
             elif a=="5":
-                b=stack.pop.get(int)
+                b=stack.pop().get(int)
                 l=stack[-1].get(list)
                 m=l[b:]
             elif a=="6":
-                b=stack.pop.get(int)
-                d=stack.pop.get(int)
+                b=stack.pop().get(int)
+                d=stack.pop().get(int)
                 l=stack[-1].get(list)
                 m=l[b::d]
             elif a=="7":
-                b=stack.pop.get(int)
-                d=stack.pop.get(int)
+                b=stack.pop().get(int)
+                d=stack.pop().get(int)
                 l=stack[-1].get(list)
                 m=l[:b:d]
             elif a=="8":
-                b=stack.pop.get(int)
-                d=stack.pop.get(int)
-                e=stack.pop.get(int)
+                b=stack.pop().get(int)
+                d=stack.pop().get(int)
+                e=stack.pop().get(int)
                 l=stack[-1].get(list)
                 m=l[b:d:e]
-            stack.append(m)
+            stack.append(obj(m))
             ip+=1
+        elif c[ip]=="X":
+            nest_count=1
+            ip+=1
+            while not (ip>=len(c) or (nest_count==0 and c[ip]==";")):
+                if c[ip] in block_cmds:
+                    nest_count+=1
+                if c[ip]==";":
+                    nest_count-=1
+                ip+=1
+            return ip
         elif c[ip]==">":
             a=stack.pop().get(int)
             b=stack.pop().get(int)
@@ -172,7 +189,7 @@ def parse_str_from(stack,c,i):
             b=stack[-1].get(list)
             for i in range(len(b)):
                 if b[i].get(str)==a:
-                    stack.append(i)
+                    stack.append(obj(i))
                     break
         elif c[ip]=="+":
             a=stack.pop().get(int)
@@ -194,6 +211,10 @@ def parse_str_from(stack,c,i):
             a=stack.pop().get(int)
             b=stack.pop().get(int)
             stack.append(obj(b//a))
+        elif c[ip]=="%":
+            a=stack.pop().get(int)
+            b=stack.pop().get(int)
+            stack.append(obj(b%a))
         elif c[ip]=="^":
             a=stack.pop().get(int)
             b=stack.pop().get(int)
@@ -233,11 +254,11 @@ def parse_str_from(stack,c,i):
             b=stack.pop().get(str)
             stack.append(obj(b+a))
         elif c[ip]=="j":
-            a=stack.pop.get(list):
-            stack.append(any([i.o for i in a]))
+            a=stack.pop().get(list)
+            stack.append(obj(any([i.o for i in a])))
         elif c[ip]=="k":
-            a=stack.pop.get(list):
-            stack.append(all([i.o for i in a]))
+            a=stack.pop().get(list)
+            stack.append(obj(all([i.o for i in a])))
         elif c[ip]=="h":
             stack.append(obj(100))
         elif c[ip]=="M":
@@ -251,6 +272,9 @@ def parse_str_from(stack,c,i):
         elif c[ip]=="n":
             a=stack.pop().get(int)
             stack.append(obj(bin(a)[2:]))
+        elif c[ip]=="u":
+            a=stack.pop().get(list)
+            stack.append(obj(sum([i.get(int) for i in a])))
         elif c[ip]=="o":
             a=stack.pop().get(str)
             b=[]
@@ -269,9 +293,10 @@ def parse_str_from(stack,c,i):
         elif c[ip]=="p":
             sys.stdout.write(stack[-1].get(str))
         elif c[ip]=="P":
+            print "PRINTING"
             sys.stdout.write(stack[-1].get(str)+"\n")
         elif c[ip]==u"\u2603":
-            sys.stdout.write(c)
+            stack.append(obj(c))
         elif c[ip]=="m":
             x=stack.pop().get(int)
             if x<2:
@@ -285,6 +310,11 @@ def parse_str_from(stack,c,i):
                 stack.append(obj(isPrime))
             #stack.append(chr(1) if ord(stack[-1])>1 and all([ord(stack[-1])%j!=0 for j in range(2,ord(stack[-1]))]) else chr(0))
         elif c[ip]=="w":
+            while stack.pop():
+                ip_=parse_str_from(stack,c,ip+1)
+            ip=ip_
+        elif c[ip]=="g":
+            ip_=parse_str_from(stack,c,ip+1)
             while stack.pop():
                 ip_=parse_str_from(stack,c,ip+1)
             ip=ip_
